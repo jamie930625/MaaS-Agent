@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和泰 MaaS 智能營運戰情室 (展示版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        
+        /* Custom Scrollbar for Chat */
+        .chat-scroll::-webkit-scrollbar { width: 6px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+        
+        /* Thinking animation */
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+            height: 6px; width: 6px; border-radius: 50%; background-color: #94a3b8; display: inline-block; margin: 0 2px;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 flex h-screen overflow-hidden text-slate-800">
+
+    <!-- 左側邊欄 (Sidebar) -->
+    <aside class="w-80 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20 hidden md:flex relative">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <i class="fa-solid fa-taxi text-yellow-400"></i> MaaS 營運戰情室
+            </h1>
+        </div>
+        
+        <div class="p-6 flex-1 overflow-y-auto">
+            <!-- Demo Alert -->
+            <div class="bg-emerald-900/50 border border-emerald-500/30 rounded-lg p-4 mb-6 text-emerald-200 text-sm">
+                <div class="flex items-center gap-2 font-bold text-emerald-400 mb-1">
+                    <i class="fa-solid fa-sparkles"></i> 互動展示模式 (Demo)
+                </div>
+                <p>此網頁為前端展示版，無須設定 API Key 即可體驗 Agent 決策流程。真實後端邏輯與模型訓練已開源於 GitHub。</p>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="mb-6">
+                <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3">👨‍💻 開發者資訊</h3>
+                <div class="bg-slate-800 rounded-lg p-4">
+                    <p class="text-white font-bold text-lg mb-1">林立潔</p>
+                    <p class="text-sm text-slate-400 mb-2">國立台灣大學學士班</p>
+                    <div class="inline-block bg-blue-900/50 text-blue-300 text-xs px-2 py-1 rounded border border-blue-700/50">
+                        目標職缺：資料科學及AI應用專員
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack -->
+            <div>
+                <h3 class="text-xs uppercase tracking-wider text-slate-500 font-bold mb-3">🛠️ 專案架構</h3>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-start gap-3">
+                        <i class="fa-solid fa-brain mt-1 text-purple-400"></i>
+                        <div><strong class="text-white block">大腦 (LLM)</strong>LangGraph 框架結合 Llama 3</div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="fa-solid fa-wrench mt-1 text-orange-400"></i>
+                        <div><strong class="text-white block">手腳 (Tool)</strong>本地端 XGBoost 預測模型</div>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="fa-solid fa-database mt-1 text-blue-400"></i>
+                        <div><strong class="text-white block">數據</strong>紐約 TLC 百萬筆乘車紀錄</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Toyota logo mockup styling -->
+        <div class="p-4 border-t border-slate-800 text-center text-xs text-slate-600">
+            MaaS Intelligent Dispatch System POC
+        </div>
+    </aside>
+
+    <!-- 右側主畫面 (Main Content) -->
+    <main class="flex-1 flex flex-col h-full relative bg-white">
+        
+        <!-- Header & Metrics -->
+        <header class="bg-white border-b border-slate-200 p-6 shadow-sm z-10">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-chart-column text-red-600"></i> 智能車輛調度戰情室 (AI Dispatch Dashboard)
+            </h2>
+            <p class="text-sm text-slate-500 mb-6">結合巨量乘車數據與大型語言模型，協助營運主管以自然語言進行精準的車輛調度決策。</p>
+            
+            <!-- Dashboard Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
+                    <p class="text-sm text-slate-500 mb-1 font-medium">目前線上營運車輛</p>
+                    <p class="text-3xl font-bold text-slate-800 mb-1">2,845 <span class="text-base font-normal text-slate-500">台</span></p>
+                    <p class="text-xs text-emerald-600 font-medium flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> ↑ 120 台 (晚間尖峰調度)</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
+                    <p class="text-sm text-slate-500 mb-1 font-medium">今日已完成派車指令</p>
+                    <p class="text-3xl font-bold text-slate-800 mb-1">15,420 <span class="text-base font-normal text-slate-500">次</span></p>
+                    <p class="text-xs text-blue-600 font-medium flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> 模型預測 MAE: 11.64</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-sm">
+                    <p class="text-sm text-slate-500 mb-1 font-medium">系統即時狀態</p>
+                    <p class="text-3xl font-bold text-slate-800 mb-1">展示待命 <span class="text-base font-normal text-slate-500">Demo</span></p>
+                    <p class="text-xs text-slate-500 font-medium flex items-center gap-1"><i class="fa-solid fa-bolt text-yellow-500"></i> 流暢展示體驗</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Chat Area -->
+        <div class="flex-1 overflow-y-auto p-6 chat-scroll bg-slate-50/50" id="chat-container">
+            <!-- Initial Greeting -->
+            <div class="flex gap-4 mb-6">
+                <div class="w-10 h-10 rounded-full bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-robot text-red-600"></i>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-4 shadow-sm max-w-[80%] text-sm leading-relaxed text-slate-700">
+                    主管您好！戰情室數據已同步。我是您的 MaaS 營運助理，您可以點擊下方的快速情境按鈕，觀看我的決策與預測過程！
+                </div>
+            </div>
+            
+            <!-- Dynamic Messages will be appended here -->
+        </div>
+
+        <!-- Input Area & Quick Prompts -->
+        <div class="bg-white border-t border-slate-200 p-4">
+            <div class="max-w-4xl mx-auto">
+                <p class="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider"><i class="fa-solid fa-lightbulb text-yellow-500"></i> 快速情境測試</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="sendPrompt(1)" class="bg-white border border-slate-300 hover:border-red-500 hover:text-red-600 text-slate-600 text-sm py-2 px-4 rounded-full transition-all duration-200 shadow-sm hover:shadow">
+                        🚕 預測信義區週五晚間調度量
+                    </button>
+                    <button onclick="sendPrompt(2)" class="bg-white border border-slate-300 hover:border-red-500 hover:text-red-600 text-slate-600 text-sm py-2 px-4 rounded-full transition-all duration-200 shadow-sm hover:shadow">
+                        📉 查詢平日離峰時段需求差異
+                    </button>
+                    <button onclick="sendPrompt(3)" class="bg-white border border-slate-300 hover:border-red-500 hover:text-red-600 text-slate-600 text-sm py-2 px-4 rounded-full transition-all duration-200 shadow-sm hover:shadow">
+                        ☀️ 評估週末假日下午派車狀況
+                    </button>
+                </div>
+                
+                <div class="relative">
+                    <input type="text" id="user-input" placeholder="您也可以嘗試輸入文字 (展示模式下將回覆預設說明)..." 
+                           class="w-full bg-slate-50 border border-slate-300 rounded-xl py-3 pl-4 pr-12 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all text-sm"
+                           onkeypress="if(event.key === 'Enter') handleManualInput()">
+                    <button onclick="handleManualInput()" class="absolute right-2 top-2 w-8 h-8 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        let isProcessing = false;
+
+        // Pre-defined mock data
+        const mockData = {
+            1: {
+                prompt: "幫我算一下今天禮拜五晚上 7 點，1 號地區大概會需要調度幾台車？",
+                response: "根據預測工具的結果，今天禮拜五晚上 7 點（尖峰時段），1 號地區大概會需要調度 <strong class='text-red-600'>6 台車</strong> 🚕。建議提前 15 分鐘派車前往熱區！"
+            },
+            2: {
+                prompt: "請問如果是平日禮拜三下午 2 點（離峰），1 號地區的需求量是多少？",
+                response: "模型運算完成：平日下午 2 點屬於離峰時段，預計 1 號地區的需求量大約僅需 <strong class='text-blue-600'>2 台車</strong> 📉。建議將其餘閒置車輛調度至交通節點周邊。"
+            },
+            3: {
+                prompt: "幫我預測一下這禮拜天下午 3 點，1 號地區的叫車需求。",
+                response: "收到！禮拜天下午 3 點雖然是週末，但非通勤尖峰，預測模型顯示 1 號地區約需調度 <strong class='text-emerald-600'>4 台車</strong> ☀️。我會持續監控是否有突發的人潮需求。"
+            }
+        };
+
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addUserMessage(text) {
+            const html = `
+                <div class="flex gap-4 mb-6 flex-row-reverse fade-in">
+                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-white">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="bg-slate-800 text-white rounded-2xl rounded-tr-none p-4 shadow-sm max-w-[80%] text-sm leading-relaxed">
+                        ${text}
+                    </div>
+                </div>
+            `;
+            chatContainer.insertAdjacentHTML('beforeend', html);
+            scrollToBottom();
+        }
+
+        async function addBotResponseWithThinking(responseHtml) {
+            // 1. Add Thinking Indicator
+            const thinkingId = 'thinking-' + Date.now();
+            const thinkingHtml = `
+                <div id="${thinkingId}" class="flex gap-4 mb-6 fade-in">
+                    <div class="w-10 h-10 rounded-full bg-red-100 border border-red-200 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-robot text-red-600"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-4 shadow-sm max-w-[80%] text-sm">
+                        <div class="text-slate-500 font-medium mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-microchip animate-pulse text-red-500"></i> AI Agent 思考與執行中
+                        </div>
+                        <ul class="text-xs text-slate-400 space-y-2 mb-2">
+                            <li id="step-1-${thinkingId}" class="hidden"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> 解析自然語言指令...</li>
+                            <li id="step-2-${thinkingId}" class="hidden"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> 萃取時空特徵 (Tool Calling)...</li>
+                            <li id="step-3-${thinkingId}" class="hidden"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> 呼叫 XGBoost 模型...</li>
+                        </ul>
+                        <div id="typing-${thinkingId}" class="typing-indicator text-slate-400">
+                            <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertAdjacentHTML('beforeend', thinkingHtml);
+            scrollToBottom();
+
+            // Simulate Agent Steps
+            await new Promise(r => setTimeout(r, 600));
+            document.getElementById(`step-1-${thinkingId}`).classList.remove('hidden');
+            scrollToBottom();
+            
+            await new Promise(r => setTimeout(r, 800));
+            document.getElementById(`step-2-${thinkingId}`).classList.remove('hidden');
+            scrollToBottom();
+            
+            await new Promise(r => setTimeout(r, 800));
+            document.getElementById(`step-3-${thinkingId}`).classList.remove('hidden');
+            scrollToBottom();
+            
+            await new Promise(r => setTimeout(r, 600));
+
+            // Replace thinking with actual response
+            document.getElementById(thinkingId).remove();
+            
+            const finalHtml = `
+                <div class="flex gap-4 mb-6 fade-in">
+                    <div class="w-10 h-10 rounded-full bg-red-100 border border-red-200 flex items-center justify-center shrink-0 relative">
+                        <i class="fa-solid fa-robot text-red-600 relative z-10"></i>
+                        <span class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-4 shadow-sm max-w-[80%] text-sm leading-relaxed text-slate-700">
+                        ${responseHtml}
+                    </div>
+                </div>
+            `;
+            chatContainer.insertAdjacentHTML('beforeend', finalHtml);
+            scrollToBottom();
+        }
+
+        async function sendPrompt(id) {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            const data = mockData[id];
+            addUserMessage(data.prompt);
+            await addBotResponseWithThinking(data.response);
+            
+            isProcessing = false;
+        }
+
+        async function handleManualInput() {
+            if (isProcessing) return;
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            isProcessing = true;
+            userInput.value = '';
+            addUserMessage(text);
+            
+            const mockText = `<em>*(展示模式提示)*</em> 主管您好，您輸入了：「${text}」。<br><br>在正式上線的版本中，Agent 會將這段話轉譯為參數並呼叫 XGBoost 模型。為了獲得最佳的展示體驗，建議您點擊上方的三個<strong>快速指令按鈕</strong>喔！`;
+            
+            await addBotResponseWithThinking(mockText);
+            isProcessing = false;
+        }
+    </script>
+</body>
+</html>
