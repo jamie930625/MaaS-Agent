@@ -53,6 +53,7 @@ Libraries: `LangGraph`, `Groq API`
 
 ```bash
 pip install -r requirements.txt
+```
 
 ## Configure Environment Variables
 
